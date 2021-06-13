@@ -5,5 +5,6 @@ public enum MessageType {
     FILE_REQUEST,
     LIST,
     FILE,
+    AUTH,
     CHAT
 }
