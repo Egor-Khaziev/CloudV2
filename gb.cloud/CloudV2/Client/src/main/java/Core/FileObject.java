@@ -1,10 +1,10 @@
 package Core;
 
+import lombok.Data;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import lombok.Data;
 
 @Data
 public class FileObject implements Message {
@@ -13,10 +13,12 @@ public class FileObject implements Message {
     private String name;
     private byte[] data;
 
+
+
     public FileObject(Path path) throws IOException {
-        len = Files.size(path);
-        name = path.getFileName().toString();
-        data = Files.readAllBytes(path);
+        this.len = Files.size(path);
+        this.name = path.getFileName().toString();
+        this.data = Files.readAllBytes(path);
     }
 
     @Override

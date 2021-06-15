@@ -19,6 +19,8 @@ public class ControllerMainPanel {
     @FXML
     public VBox ClientPanel, ServerPanel;
 
+
+
     static ControllerMainPanel controllerMP;
     private static ClientConnect clientConnect;
 
@@ -41,7 +43,7 @@ public class ControllerMainPanel {
 
     public void copyBtnAction(ActionEvent actionEvent) {
         ControllerPCPanel leftPC = (ControllerPCPanel) ClientPanel.getProperties().get("ctrl");
-        ControllerPCPanel rightPC = (ControllerPCPanel) ServerPanel.getProperties().get("ctrl");
+        ControllerServerPanel rightPC = (ControllerServerPanel) ServerPanel.getProperties().get("ctrl");
 
         if (leftPC.getSelectedFilename() == null && rightPC.getSelectedFilename() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No file selected", ButtonType.OK);
@@ -49,7 +51,7 @@ public class ControllerMainPanel {
             return;
         }
 
-        ControllerPCPanel srcPC = null, dstPC = null;
+        ControllerPanel srcPC = null, dstPC = null;
         if (leftPC.getSelectedFilename() != null) {
             srcPC = leftPC;
             dstPC = rightPC;
@@ -75,4 +77,9 @@ public class ControllerMainPanel {
     }
 
 
+    public void btnDeleteAction(ActionEvent actionEvent) {
+    }
+
+    public void btnCutAction(ActionEvent actionEvent) {
+    }
 }

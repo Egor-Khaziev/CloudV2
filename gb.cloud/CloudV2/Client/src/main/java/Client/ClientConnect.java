@@ -94,9 +94,8 @@ public class ClientConnect {
 
                                 ControllerServerPanel.setPath(((ListMessage) message).getDirPath());
                                 ControllerServerPanel.setFileList(((ListMessage) message).getList());
-                                if (ControllerServerPanel.getPathRoot()==null){
-                                    ControllerServerPanel.setPathRoot(((ListMessage) message).getDirPath());
-                                }
+
+
 
 //                            Platform.runLater(() -> {
 //

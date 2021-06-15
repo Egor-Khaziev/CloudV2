@@ -1,7 +1,9 @@
 package Client.Panel;
 
 
+import Client.ClientConnect;
 import Core.FileInfo;
+import Core.ListRequest;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -11,7 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,9 +25,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ControllerServerPanel implements Initializable {
+import static java.lang.Thread.sleep;
+
+@Slf4j
+public class ControllerServerPanel implements Initializable, ControllerPanel {
 
     static List<FileInfo> fileList;
+    static int hashFileList;
     static Path path;
     static Path pathRoot;
 
@@ -32,15 +40,18 @@ public class ControllerServerPanel implements Initializable {
     }
 
     public static void setPath(Path path) {
-        ControllerServerPanel.path = path;
+        ControllerServerPanel.path = path.toAbsolutePath();
+        setPathRoot(path);
     }
 
     public static Path getPathRoot() {
         return pathRoot;
     }
 
-    public static void setPathRoot(Path pathRoot) {
-        ControllerServerPanel.pathRoot = pathRoot;
+    public static void setPathRoot(Path path) {
+        if(pathRoot==null) {
+            pathRoot = path.toAbsolutePath();
+        }
     }
 
 
@@ -88,19 +99,22 @@ public class ControllerServerPanel implements Initializable {
         filesTable.getSortOrder().add(fileTypeColumn);
 
         filesTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
             @SneakyThrows
             @Override
             public void handle(MouseEvent event) {
                 if (event.getClickCount() == 2) {
+
                     Path path = Paths.get(pathField.getText()).resolve(filesTable.getSelectionModel().getSelectedItem().getFilename());
                     if (Files.isDirectory(path)) {
+                        sendListRequest(path);
                         updateList(path);
                     }
                 }
             }
         });
 
-
+        hashFileList = fileList.hashCode();
 
         updateList(path);
     }
@@ -108,13 +122,11 @@ public class ControllerServerPanel implements Initializable {
 
     @SneakyThrows
     public void updateList(Path path)  {
+        log.debug("updateList run");
         try {
             pathField.setText(path.normalize().toAbsolutePath().toString());
             filesTable.getItems().clear();
             filesTable.getItems().addAll(fileList);
-
-
-//        filesTable.getItems().addAll(FileInfo.getList().stream().map(FileInfo::new).collect(Collectors.toList()));
 
             filesTable.sort();
         } catch (Exception e) {
@@ -125,12 +137,46 @@ public class ControllerServerPanel implements Initializable {
     }
     @SneakyThrows
     public void btnPathUpAction(ActionEvent actionEvent)  {
-        Path upperPath = Paths.get(pathField.getText()).getParent();
-        if (upperPath != pathRoot) {
+
+        if (path.getParent().toAbsolutePath().equals(pathRoot.getParent().toAbsolutePath())){
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Это корневой каталог вашего облака", ButtonType.OK);
+            alert.showAndWait();
+        }
+        else {
+            log.debug("button UP pushed");
+            Path upperPath = Paths.get(pathField.getText()).getParent();
+
+            sendListRequest(upperPath);
+
+
             updateList(upperPath);
         }
     }
 
+    private void sendListRequest(Path path) throws IOException, InterruptedException {
+
+        int i = 0;
+        ListRequest listRequest = new ListRequest();
+
+        log.debug("List-request created");
+        listRequest.setDirPath(path.toString());
+
+        log.debug("List-request send");
+        ClientConnect.getOs().writeObject(listRequest);
+        ClientConnect.getOs().flush();
+
+
+        while (hashFileList==fileList.hashCode()&&i<20){
+            i++;
+            sleep(100);
+            if (i>=20){
+                log.error("превышено время ожидания ЛИСТА");
+            }
+        }
+        if (hashFileList!=fileList.hashCode()){
+            hashFileList=fileList.hashCode();
+        }
+    }
 
 
     public String getSelectedFilename() {

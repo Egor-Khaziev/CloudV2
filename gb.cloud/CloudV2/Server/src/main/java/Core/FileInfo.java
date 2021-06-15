@@ -53,7 +53,6 @@ public class FileInfo implements Serializable {
 
 
     public FileInfo(Path path) {
-
         try {
             this.filename = path.getFileName().toString();
             this.size = Files.size(path);

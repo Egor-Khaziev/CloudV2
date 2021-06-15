@@ -1,5 +1,6 @@
 package Server;
 
+import com.sun.security.ntlm.Client;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -20,6 +21,8 @@ public class Server {
                 log.debug("server socket accepted");
                 Handler handler = new Handler(socket);
                 new Thread(handler).start();
+
+
 
             } catch (Exception e) {
                 log.error("Connection was broken");

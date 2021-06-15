@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ControllerPCPanel implements Initializable {
+public class ControllerPCPanel implements Initializable, ControllerPanel {
 
 
     @FXML

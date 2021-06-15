@@ -2,6 +2,7 @@ package Server;
 
 import Core.FileObject;
 import Core.ListMessage;
+import Core.ListRequest;
 import Core.Message;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,8 +39,11 @@ public class Handler implements Runnable, Closeable {
                         break;
                     case LIST_REQUEST:
                         log.debug("сообщение - лист-запрос");
+                        if (((ListRequest) msg).getDirPath() != null){
+                            serverDir = ((ListRequest) msg).getDirPath();
+                        }
 
-                        os.writeObject((new ListMessage(serverDir)));
+                            os.writeObject((new ListMessage(serverDir)));
                         log.debug("отправлен - лист");
                         os.flush();
                         break;
