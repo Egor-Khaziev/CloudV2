@@ -39,8 +39,8 @@
 
    <HBox layoutX="36.0" layoutY="388.0" maxWidth="Infinity" prefHeight="35.0" prefWidth="534.0" spacing="10.0" AnchorPane.bottomAnchor="0.8000000000000114" AnchorPane.rightAnchor="66.0">
       <Button focusTraversable="false" maxWidth="Infinity" onAction="#copyBtnAction" text="Копировать файл" HBox.hgrow="ALWAYS" />
-      <Button focusTraversable="false" maxWidth="Infinity" text="Переместить файл" HBox.hgrow="ALWAYS" />
-      <Button focusTraversable="false" maxWidth="Infinity" text="Удалить файл" HBox.hgrow="ALWAYS" />
+      <Button focusTraversable="false" maxWidth="Infinity" onAction="#btnCutAction" text="Переместить файл" HBox.hgrow="ALWAYS" />
+      <Button focusTraversable="false" maxWidth="Infinity" onAction="#btnDeleteAction" text="Удалить файл" HBox.hgrow="ALWAYS" />
       <Button focusTraversable="false" maxWidth="Infinity" onAction="#btnExitAction" text="Выход из программы" HBox.hgrow="ALWAYS" />
       <padding>
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

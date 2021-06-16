@@ -94,16 +94,10 @@ public class ClientConnect {
 
                                 ControllerServerPanel.setPath(((ListMessage) message).getDirPath());
                                 ControllerServerPanel.setFileList(((ListMessage) message).getList());
-
-
-
-//                            Platform.runLater(() -> {
-//
-//                            listView.getItems().clear();
-//                            listView.getItems()
-//                                    .addAll(list.getFiles());
-//                            });
-                            break;
+                                break;
+                            case FILE:
+                                log.debug("сообщение - файл");
+                                break;
                         }
 
                     }

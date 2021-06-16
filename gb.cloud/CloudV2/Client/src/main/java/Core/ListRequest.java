@@ -12,6 +12,11 @@ public class ListRequest implements Message {
     public void setDirPath(String dirPath) {
         this.dirPath = dirPath;
     }
+    public ListRequest() {}
+
+    public ListRequest(String dirPath) {
+        this.dirPath = dirPath;
+    }
 
     @Override
     public MessageType getType() {

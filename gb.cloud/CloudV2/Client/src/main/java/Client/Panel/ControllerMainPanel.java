@@ -2,22 +2,33 @@ package Client.Panel;
 
 
 import Client.ClientConnect;
+import Core.FileObject;
+import Core.FileRequest;
+import Core.ListRequest;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ResourceBundle;
 
-public class ControllerMainPanel {
+@Slf4j
+public class ControllerMainPanel implements Initializable {
 
     @FXML
     public VBox ClientPanel, ServerPanel;
+
+    public ControllerPCPanel PanelPC;
+    public ControllerServerPanel PanelServer;
+
 
 
 
@@ -36,41 +47,68 @@ public class ControllerMainPanel {
         return controllerMP;
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+        PanelPC = (ControllerPCPanel) ClientPanel.getProperties().get("ctrl");
+        PanelServer = (ControllerServerPanel) ServerPanel.getProperties().get("ctrl");
+
+    }
+
 
     public void btnExitAction(ActionEvent actionEvent) {
         Platform.exit();
     }
 
     public void copyBtnAction(ActionEvent actionEvent) {
-        ControllerPCPanel leftPC = (ControllerPCPanel) ClientPanel.getProperties().get("ctrl");
-        ControllerServerPanel rightPC = (ControllerServerPanel) ServerPanel.getProperties().get("ctrl");
 
-        if (leftPC.getSelectedFilename() == null && rightPC.getSelectedFilename() == null) {
+        Path sourcePath = null;
+        Path destinationPath = null;
+
+        if (PanelPC.getSelectedFilename() == null && PanelServer.getSelectedFilename() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "No file selected", ButtonType.OK);
             alert.showAndWait();
             return;
         }
 
-        ControllerPanel srcPC = null, dstPC = null;
-        if (leftPC.getSelectedFilename() != null) {
-            srcPC = leftPC;
-            dstPC = rightPC;
+        ControllerPanel source = null, destination = null;
+        if (PanelPC.getSelectedFilename() != null) {
+            source = PanelPC;
+            destination = PanelServer;
         }
-        if (rightPC.getSelectedFilename() != null) {
-            srcPC = rightPC;
-            dstPC = leftPC;
+        if (PanelServer.getSelectedFilename() != null) {
+            source = PanelServer;
+            destination = PanelPC;
         }
 
-        Path srcPath = Paths.get(srcPC.getCurrentPath(), srcPC.getSelectedFilename());
-        Path dstPath = Paths.get(dstPC.getCurrentPath()).resolve(srcPath.getFileName().toString());
+         sourcePath = Paths.get(source.getCurrentPath(), source.getSelectedFilename());
+         destinationPath = Paths.get(destination.getCurrentPath()).resolve(sourcePath.getFileName().toString());
 
         try {
-            Files.copy(srcPath, dstPath);
-            dstPC.updateList(Paths.get(dstPC.getCurrentPath()));
-        } catch (IOException e) {
+            fileCopy(destination, sourcePath, destinationPath);
+        } catch (IOException | InterruptedException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Can't copy file", ButtonType.OK);
             alert.showAndWait();
         }
+    }
+
+    private void fileCopy(ControllerPanel destination, Path sourcePath, Path destinationPath) throws IOException, InterruptedException {
+
+        if(destination == PanelPC){
+            FileRequest fileRequest = new FileRequest(sourcePath);
+            ClientConnect.getOs().writeObject(fileRequest);
+            log.debug("отправлен файл-реквест");
+        }
+        if(destination == PanelServer){
+            FileObject file = new FileObject(sourcePath);
+            ClientConnect.getOs().writeObject(file);
+            log.debug("отправлен файл");
+            PanelServer.sendListRequest  (Paths.get(destination.getCurrentPath()).toAbsolutePath());
+        }
+
+        destination.updateList(Paths.get(destination.getCurrentPath()).toAbsolutePath());
+
+
     }
 
     public void btnAboutAction(ActionEvent actionEvent) {
@@ -82,4 +120,6 @@ public class ControllerMainPanel {
 
     public void btnCutAction(ActionEvent actionEvent) {
     }
+
+
 }

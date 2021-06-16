@@ -20,10 +20,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
@@ -153,13 +151,12 @@ public class ControllerServerPanel implements Initializable, ControllerPanel {
         }
     }
 
-    private void sendListRequest(Path path) throws IOException, InterruptedException {
+    protected void sendListRequest(Path path) throws IOException, InterruptedException {
 
         int i = 0;
-        ListRequest listRequest = new ListRequest();
+        ListRequest listRequest = new ListRequest(path.toString());
 
         log.debug("List-request created");
-        listRequest.setDirPath(path.toString());
 
         log.debug("List-request send");
         ClientConnect.getOs().writeObject(listRequest);

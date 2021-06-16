@@ -12,6 +12,7 @@ public class FileObject implements Message {
     private long len;
     private String name;
     private byte[] data;
+    private String path;
 
 
 
@@ -19,6 +20,7 @@ public class FileObject implements Message {
         this.len = Files.size(path);
         this.name = path.getFileName().toString();
         this.data = Files.readAllBytes(path);
+        this.path = path.toAbsolutePath().toString();
     }
 
     @Override

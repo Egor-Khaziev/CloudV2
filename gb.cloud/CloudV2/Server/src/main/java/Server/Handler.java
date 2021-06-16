@@ -1,9 +1,6 @@
 package Server;
 
-import Core.FileObject;
-import Core.ListMessage;
-import Core.ListRequest;
-import Core.Message;
+import Core.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
@@ -33,17 +30,21 @@ public class Handler implements Runnable, Closeable {
                 Message msg = (Message) is.readObject();
                 log.debug("Получено сообщение");
                 switch (msg.getType()) {
+                    case FILE_REQUEST:
+                        log.debug("сообщение - файл-запрос");
+                        handlerFileRequest(msg, os);
+                        break;
                     case FILE:
-                        log.debug("сообщение - файл");
+                        log.debug("сообщение - файл: " + ((FileObject)msg).getName() + " path: " + ((FileObject)msg).getPath());
                         handlerFileMessage(msg);
                         break;
                     case LIST_REQUEST:
                         log.debug("сообщение - лист-запрос");
-                        if (((ListRequest) msg).getDirPath() != null){
-                            serverDir = ((ListRequest) msg).getDirPath();
+                        if (((ListRequest) msg).getDirPath() != null) {
+                            serverDir = ((ListRequest) msg).getDirPath()+"/";
                         }
 
-                            os.writeObject((new ListMessage(serverDir)));
+                        os.writeObject((new ListMessage(serverDir)));
                         log.debug("отправлен - лист");
                         os.flush();
                         break;
@@ -53,6 +54,12 @@ public class Handler implements Runnable, Closeable {
         } catch (Exception e) {
             log.error("e=", e);
         }
+    }
+
+    private void handlerFileRequest(Message msg, ObjectOutputStream os) throws IOException {
+        FileObject file = new FileObject(Paths.get(((FileRequest) msg).getPath()));
+        os.writeObject(file);
+        log.debug("отправлен файл");
     }
 
     private void handlerFileMessage(Message msg) throws Exception {
