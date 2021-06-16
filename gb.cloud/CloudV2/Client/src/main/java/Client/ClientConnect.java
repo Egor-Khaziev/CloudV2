@@ -1,10 +1,9 @@
 package Client;
 
+import Client.Panel.ControllerMainPanel;
+import Client.Panel.ControllerPCPanel;
 import Client.Panel.ControllerServerPanel;
-import Core.FileInfo;
-import Core.ListMessage;
-import Core.ListRequest;
-import Core.Message;
+import Core.*;
 import javafx.application.Platform;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 
@@ -55,14 +56,14 @@ public class ClientConnect {
     }
 
     public static ClientConnect getClientConnect(String localhost, int port) {
-        if (clientConnect == null){
+        if (clientConnect == null) {
             clientConnect = new ClientConnect(localhost, port);
         }
         return clientConnect;
     }
 
     public static ClientConnect getClientConnect() {
-        if (clientConnect == null){
+        if (clientConnect == null) {
             clientConnect = new ClientConnect();
 
         }
@@ -86,7 +87,7 @@ public class ClientConnect {
             Thread readThread = new Thread(() -> {
                 try {
                     while (true) {
-                        Message message = (Message)is.readObject();
+                        Message message = (Message) is.readObject();
                         log.debug("получено сообщение");
                         switch (message.getType()) {
                             case LIST:
@@ -95,8 +96,11 @@ public class ClientConnect {
                                 ControllerServerPanel.setPath(((ListMessage) message).getDirPath());
                                 ControllerServerPanel.setFileList(((ListMessage) message).getList());
                                 break;
+
                             case FILE:
                                 log.debug("сообщение - файл");
+
+                                handlerFileMessage(message);
                                 break;
                         }
 
@@ -114,10 +118,12 @@ public class ClientConnect {
         }
 
 
-
-
     }
 
+    private void handlerFileMessage(Message msg) throws Exception {
+        FileObject file = (FileObject) msg;
+        Files.write(Paths.get(ControllerPCPanel.getPCPath()+ "/" + file.getName()), file.getData());
+    }
 }
 
 

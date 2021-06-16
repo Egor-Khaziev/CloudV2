@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class ControllerPCPanel implements Initializable, ControllerPanel {
 
+    static Path PCPath;
 
     @FXML
     public TableView<FileInfo> filesTable;
@@ -30,6 +31,10 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
 
     @FXML
     public TextField pathField;
+
+    public static Path getPCPath() {
+        return PCPath;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,6 +72,8 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
         filesTable.getColumns().addAll(fileTypeColumn, filenameColumn, fileSizeColumn); //, fileDateColumn);
         filesTable.getSortOrder().add(fileTypeColumn);
 
+
+
         disksBox.getItems().clear();
         for (Path p : FileSystems.getDefault().getRootDirectories()) {
             disksBox.getItems().add(p.toString());
@@ -88,6 +95,7 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
 
 
         updateList(Paths.get("."));
+
     }
 
 
@@ -95,6 +103,7 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
     public void updateList(Path path) {
         try {
             pathField.setText(path.normalize().toAbsolutePath().toString());
+            PCPath = Paths.get(pathField.getText());
             filesTable.getItems().clear();
             filesTable.getItems().addAll(Files.list(path).map(FileInfo::new).collect(Collectors.toList()));
             filesTable.sort();

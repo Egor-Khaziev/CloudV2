@@ -32,14 +32,19 @@ public class Handler implements Runnable, Closeable {
                 switch (msg.getType()) {
                     case FILE_REQUEST:
                         log.debug("сообщение - файл-запрос");
+
                         handlerFileRequest(msg, os);
                         break;
+
                     case FILE:
                         log.debug("сообщение - файл: " + ((FileObject)msg).getName() + " path: " + ((FileObject)msg).getPath());
+
                         handlerFileMessage(msg);
                         break;
+
                     case LIST_REQUEST:
                         log.debug("сообщение - лист-запрос");
+
                         if (((ListRequest) msg).getDirPath() != null) {
                             serverDir = ((ListRequest) msg).getDirPath()+"/";
                         }
@@ -48,13 +53,22 @@ public class Handler implements Runnable, Closeable {
                         log.debug("отправлен - лист");
                         os.flush();
                         break;
+                    case DELETE_REQUEST:
+                        log.debug("сообщение - запрос на удаление");
 
+                        handlerFileDelete((DeleteRequest)msg);
                 }
             }
         } catch (Exception e) {
             log.error("e=", e);
         }
     }
+
+    private void handlerFileDelete(DeleteRequest msg) throws IOException {
+        Files.delete(Paths.get(msg.getPath()));
+        log.debug("файл " + msg.getPath() + " удален");
+    }
+
 
     private void handlerFileRequest(Message msg, ObjectOutputStream os) throws IOException {
         FileObject file = new FileObject(Paths.get(((FileRequest) msg).getPath()));
