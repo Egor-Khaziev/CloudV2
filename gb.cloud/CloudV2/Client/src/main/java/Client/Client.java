@@ -26,10 +26,13 @@ public class Client extends Application {
         primaryStage.show();
 
 
+
         AuthPanel.getAuthPanel().start();
-        if (!AuthPanel.getAuthPanel().getAuth()) {
-            Platform.exit();
-        }
+//        if (!AuthPanel.getAuthPanel().getAuth()) {
+//            Platform.exit();
+//        }
+
+
 
     }
 
