@@ -1,5 +1,6 @@
 package Client;
 
+import Client.Panel.AuthPanel;
 import Client.Panel.ControllerMainPanel;
 import Client.Panel.ControllerPCPanel;
 import Client.Panel.ControllerServerPanel;
@@ -100,8 +101,12 @@ public class ClientConnect {
                             case FILE:
                                 log.debug("сообщение - файл");
 
-                                handlerFileMessage(message);
+                                handlerFileMessage((FileObject)message);
                                 break;
+                            case AUTH:
+                                log.debug("сообщение - ответ попытки авторизации");
+
+                                handlerAuthMessage((Authentification)message);
                         }
 
                     }
@@ -120,9 +125,12 @@ public class ClientConnect {
 
     }
 
-    private void handlerFileMessage(Message msg) throws Exception {
-        FileObject file = (FileObject) msg;
-        Files.write(Paths.get(ControllerPCPanel.getPCPath()+ "/" + file.getName()), file.getData());
+    private void handlerAuthMessage(Authentification message) {
+          AuthPanel.getAuthPanel().setAuth(message.isAuth());
+    }
+
+    private void handlerFileMessage(FileObject msg) throws Exception {
+        Files.write(Paths.get(ControllerPCPanel.getPCPath()+ "/" + msg.getName()), msg.getData());
     }
 }
 

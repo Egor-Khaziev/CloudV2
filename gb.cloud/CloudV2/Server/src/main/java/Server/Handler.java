@@ -57,11 +57,31 @@ public class Handler implements Runnable, Closeable {
                         log.debug("сообщение - запрос на удаление");
 
                         handlerFileDelete((DeleteRequest)msg);
+                        break;
+                    case AUTH_REQUEST:
+                        log.debug("сообщение - запрос авторизации");
+
+                        os.writeObject(handlerAuthentification((AuthenticationRequest)msg));
+                        os.flush();
+                        log.debug("отправка ответа авторизации");
                 }
             }
         } catch (Exception e) {
             log.error("e=", e);
         }
+    }
+
+    private Authentification handlerAuthentification(AuthenticationRequest msg) {
+        Authentification auth = new Authentification();
+
+        if(msg.getName().equals("1") && msg.getPass().equals("1")){
+            auth.setAuth(true);
+            log.debug("авторизация одобрена");
+            return auth;
+        }
+        auth.setAuth(false);
+        log.debug("авторизация провалена");
+        return auth;
     }
 
     private void handlerFileDelete(DeleteRequest msg) throws IOException {

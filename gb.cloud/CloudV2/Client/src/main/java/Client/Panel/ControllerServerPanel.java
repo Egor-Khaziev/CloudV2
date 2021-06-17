@@ -59,6 +59,10 @@ public class ControllerServerPanel implements Initializable, ControllerPanel {
     @FXML
     public TextField pathField;
 
+    public static Path getPath() {
+        return path;
+    }
+
     @SneakyThrows
     @Override
     public void initialize(URL location, ResourceBundle resources) {

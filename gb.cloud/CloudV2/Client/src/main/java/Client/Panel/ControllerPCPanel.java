@@ -4,11 +4,10 @@ import Core.FileInfo;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,9 +18,13 @@ import java.nio.file.Paths;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 public class ControllerPCPanel implements Initializable, ControllerPanel {
 
     static Path PCPath;
+
+    Label label = new Label();
 
     @FXML
     public TableView<FileInfo> filesTable;
@@ -35,6 +38,9 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
     public static Path getPCPath() {
         return PCPath;
     }
+
+
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -80,19 +86,6 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
         }
         disksBox.getSelectionModel().select(0);
 
-        filesTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getClickCount() == 2) {
-                    Path path = Paths.get(pathField.getText()).resolve(filesTable.getSelectionModel().getSelectedItem().getFilename());
-                    if (Files.isDirectory(path)) {
-                        updateList(path);
-                    }
-                }
-            }
-        });
-
-
 
         updateList(Paths.get("."));
 
@@ -135,6 +128,7 @@ public class ControllerPCPanel implements Initializable, ControllerPanel {
     public String getCurrentPath() {
         return pathField.getText();
     }
+
 
 
 
