@@ -15,10 +15,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 @Slf4j
-public class AuthPanel {
+public class AuthPanel implements Initializable {
     public TextField usernameTF;
     public PasswordField passwordPF;
     public Button connectBtn;
@@ -38,7 +42,6 @@ public class AuthPanel {
         stage.setTitle("Cloud Authentification");
         stage.setScene(new Scene(root));
         stage.show();
-        //stage.hide();
 
     }
 
@@ -63,17 +66,6 @@ public class AuthPanel {
         authentication(usernameTF.getText(), passwordPF.getText());
 
 
-//        while (true) {
-//
-//            if (auth) {
-//
-//                log.debug("авторизация ободрена");
-//                stage.close();
-//                break;
-//            }
-//
-//        }
-
     }
 
     public void setAuth(boolean auth) {
@@ -96,4 +88,8 @@ public class AuthPanel {
     }
 
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+    }
 }

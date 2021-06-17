@@ -7,17 +7,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+@Slf4j
 public class Client extends Application {
 
     String cloudWindow = "/Client/Panel/mainPanel.fxml";
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         ClientConnect.getClientConnect();
-
 
 
         Parent root = FXMLLoader.load(getClass().getResource(cloudWindow));
@@ -26,14 +27,15 @@ public class Client extends Application {
         primaryStage.show();
 
 
-
         AuthPanel.getAuthPanel().start();
-//        if (!AuthPanel.getAuthPanel().getAuth()) {
-//            Platform.exit();
-//        }
 
+        log.debug("проверка на аутентификацию при закрытии");
+        AuthPanel.stage.setOnCloseRequest(event -> {
+            if (!AuthPanel.getAuthPanel().getAuth()) {
+                Platform.exit();
+            }
 
-
+        });
     }
 
     public void openWindow(String winName, Stage primaryStage) throws IOException {
@@ -46,6 +48,7 @@ public class Client extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
     }
+
     public void Authentication(Stage primaryStage) throws IOException {
 
 
@@ -53,6 +56,7 @@ public class Client extends Application {
 
 
     }
+
     public static void main(String[] args) {
         launch(args);
     }
